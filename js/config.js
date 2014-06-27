@@ -1,25 +1,24 @@
-﻿/*global dojo */
 /** @license
- | Version 10.2
- | Copyright 2012 Esri
- |
- | Licensed under the Apache License, Version 2.0 (the "License");
- | you may not use this file except in compliance with the License.
- | You may obtain a copy of the License at
- |
- |    http://www.apache.org/licenses/LICENSE-2.0
- |
- | Unless required by applicable law or agreed to in writing, software
- | distributed under the License is distributed on an "AS IS" BASIS,
- | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- | See the License for the specific language governing permissions and
- | limitations under the License.
- */
+| Version 10.1.1
+| Copyright 2012 Esri
+|
+| Licensed under the Apache License, Version 2.0 (the "License");
+| you may not use this file except in compliance with the License.
+| You may obtain a copy of the License at
+|
+|    http://www.apache.org/licenses/LICENSE-2.0
+|
+| Unless required by applicable law or agreed to in writing, software
+| distributed under the License is distributed on an "AS IS" BASIS,
+| WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+| See the License for the specific language governing permissions and
+| limitations under the License.
+*/
 dojo.provide("js.Config");
 dojo.declare("js.Config", null, {
 
     // This file contains various configuration settings for "HTML5" template
-    //
+    // 
     // Use this file to perform the following:
     //
     // 1.  Specify application title                  - [ Tag(s) to look for: ApplicationName ]
@@ -39,7 +38,7 @@ dojo.declare("js.Config", null, {
     //
     // 9. Set URL for geometry service               - [ Tag(s) to look for: GeometryService ]
     //
-    // 10. Customize routing settings for directions  - [ Tag(s) to look for: RouteServiceURL, RouteColor, RouteWidth, SearchforDirections]
+    // 10. Customize routing settings for directions  - [ Tag(s) to look for: RouteServiceURL, RouteColor, RouteWidth, SearchforDirections]  
     //
     // 11. Configure data to be displayed on the bottom panel, ReferenceOverlayLayer
     //                                                - [ Tag(s) to look for: InfoBoxWidth, Services, ReferenceOverlayLayer]
@@ -57,7 +56,7 @@ dojo.declare("js.Config", null, {
     // GENERAL SETTINGS
     // ------------------------------------------------------------------------------------------------------------------------
     // Set application title.
-    ApplicationName: "My Government Services",
+    ApplicationName: "Get Directions",
 
     // Set application icon path.
     ApplicationIcon: "images/appIcon.png",
@@ -72,29 +71,29 @@ dojo.declare("js.Config", null, {
     // BASEMAP SETTINGS
     // ------------------------------------------------------------------------------------------------------------------------
     // Set baseMap layers.
-    // Please note: All base maps need to use the same spatial reference. By default, on application start the first base map will be loaded
-    BaseMapLayers: [{
-        Key: "parcelMap",
-        ThumbnailSource: "images/parcelMap.png",
-        Name: "Streets",
-        MapURL: "http://tryitlive.arcgis.com/arcgis/rest/services/GeneralPurpose/MapServer"
-    }, {
-        Key: "hybridMap",
-        ThumbnailSource: "images/imageryHybrid.png",
-        Name: "Imagery",
-        MapURL: "http://tryitlive.arcgis.com/arcgis/rest/services/ImageryHybrid/MapServer"
-    }],
+    // Please note: All base maps need to use the same spatial reference. By default, on application start the first base map will be loaded 
 
+    BaseMapLayers: [{
+        Key: "topoMap",
+        ThumbnailSource: "images/topographic.jpg",
+        Name: "Topographic Map",
+        MapURL: "http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer"
+    }, {
+        Key: "parcelMap",
+        ThumbnailSource: "images/imagery.png",
+		Name: "Imagery Map",
+        MapURL: "http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer"
+    }],
     // Initial map extent. Use comma (,) to separate values and don t delete the last comma.
-    DefaultExtent: "-9816010,5123000,-9809970,5129500",
+    DefaultExtent: "-13101693.117767, 4046401.245,-13040904.975357, 4036401.786",
 
 
     // ------------------------------------------------------------------------------------------------------------------------
     // INFO-POPUP SETTINGS
     // ------------------------------------------------------------------------------------------------------------------------
-    // Info-popup is a popup dialog that gets displayed on selecting a feature
+    // Info-popup is a popup dialog that gets displayed on selecting a feature 
 
-    //Field for Displaying the features as info window header.
+    //Field for Displaying the features as info window header.			
     InfoWindowHeader: "NAME",
 
     // Set the content to be displayed on the info-Popup. Define labels, field values, field types and field formats.
@@ -109,23 +108,18 @@ dojo.declare("js.Config", null, {
         FieldName: "CONTACT"
     }, {
         DisplayText: "Phone:",
-        FieldName: "PHONE"
-    }, {
-        DisplayText: "Email:",
-        FieldName: "EMAIL"
-    }, {
-        DisplayText: "Days Open:",
         FieldName: "OPERDAYS"
     }, {
-        DisplayText: "Hours of Operation:",
-        FieldName: "OPERHOURS"
-    }],
+        DisplayText: "Email:",
+        FieldName: ".EMAIL"
+    }
+    ],
 
     // Set size of the info-Popup - select maximum height and width in pixels.
     //minimum height should be 200 for the info-popup in pixels
     InfoPopupHeight: 200,
 
-    //minimum width should be 300 for the info-popup in pixels
+    //minimum width should be 300 for the info-popup in pixels 
     InfoPopupWidth: 300,
 
     // Set string value to be shown for null or blank values.
@@ -143,15 +137,15 @@ dojo.declare("js.Config", null, {
             height: 25
         },
         Locators: [{
-            DisplayText: "Search Address", //Set placeholder text
-            DefaultValue: "139 W Porter Ave Naperville IL 60540", // Set default address to search.
-            LocatorParameters: ["SingleLine"], // Set Locator fields (fields to be used for searching).
+            DisplayText: "Search Address - City required ",
+            DefaultValue: "8353 Sierra Ave", // Set default address to search.
+            LocatorParamaters: ["SingleLine"], // Set Locator fields (fields to be used for searching).
             LocatorURL: "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer",
-            CandidateFields: "Loc_name, Score, Match_addr", //Set which fields are returned in results
-            DisplayField: "${Match_addr}", //Set which field from results is displayed
-            AddressMatchScore: 80, //Set minimum score to be considered a match
-            LocatorFieldName: 'Loc_name', //The returned field which specifies match type (specific locator within composite)
-            LocatorFieldValues: ["USA.StreetName", "USA.PointAddress", "USA.StreetAddress"] //List of acceptable individual locators (within composite)
+            CandidateFields: "Loc_name, Score, Match_addr",
+            DisplayField: "${Match_addr}",
+            AddressMatchScore: 80,
+            LocatorFieldName: 'Loc_name',
+            LocatorFieldValues: ["USA.StreetName", "USA.PointAddress", "USA.StreetAddress"]
         }]
     },
 
@@ -159,13 +153,13 @@ dojo.declare("js.Config", null, {
     // GEOMETRY SERVICE SETTINGS
     // ------------------------------------------------------------------------------------------------------------------------
     // Set geometry service URL.
-    GeometryService: "http://tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer",
+    GeometryService: "http://arcgis-tenone2012-1974758903.us-west-1.elb.amazonaws.com/arcgis/rest/services/Utilities/Geometry/GeometryServer",
 
     // ------------------------------------------------------------------------------------------------------------------------
     // DRIVING DIRECTIONS SETTINGS
     // ------------------------------------------------------------------------------------------------------------------------
     // Set URL for routing service (network analyst).
-    RouteServiceURL: "http://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World",
+    RouteServiceURL: "http://tasks.arcgisonline.com/ArcGIS/rest/services/NetworkAnalysis/ESRI_Route_NA/NAServer/Route",
 
     // Set color for the route symbol.
     RouteColor: "#CC6633",
@@ -174,7 +168,7 @@ dojo.declare("js.Config", null, {
     RouteWidth: 4,
 
     // Set this to true to show directions on map
-    SearchforDirections: false,
+    SearchforDirections: true,
 
     // ------------------------------------------------------------------------------------------------------------------------
     // SETTINGS FOR INFO-PODS ON THE BOTTOM PANEL
@@ -182,336 +176,326 @@ dojo.declare("js.Config", null, {
     // Set width of the boxes in the bottom panel.
     InfoBoxWidth: 417,
 
-    //Operational layer collection.
+    //Operational layer collection.		
     Services: {
-        TrashPickup: {
-            Name: "Trash Pickup",
-            Image: "images/trash.png",
-            HasRendererImage: false,
-            ServiceUrl: "http://tryitlive.arcgis.com/arcgis/rest/services/GovernmentServices/MapServer/9",
-            FieldNames: [{
-                ServiceAvailability: [{
-                    FieldName: "MONDAY",
-                    DisplayText: "Mon"
-                }, {
-                    FieldName: "TUESDAY",
-                    DisplayText: "Tue"
-                }, {
-                    FieldName: "WEDNESDAY",
-                    DisplayText: "Wed"
-                }, {
-                    FieldName: "THURSDAY",
-                    DisplayText: "Thu"
-                }, {
-                    FieldName: "FRIDAY",
-                    DisplayText: "Fri"
-                }, {
-                    FieldName: "SATURDAY",
-                    DisplayText: "Sat"
-                }, {
-                    FieldName: "SUNDAY",
-                    DisplayText: "Sun"
-                }]
-            }, {
-                Field: "Agency : ${AGENCY}"
-            }, {
-                Field: "Contact : ${CONTACT}"
-            }, {
-                Field: "Phone: ${PHONE}"
-            }, {
-                Links: [{
-                    DisplayText: "Website",
-                    FieldName: "AGENCYURL",
-                    type: "web"
-                }, {
-                    DisplayText: "Email",
-                    FieldName: "EMAIL",
-                    type: "mail"
-                }]
-            }],
+        // TrashPickup: {
+            // Name: "Trash Pickup",
+            // Image: "images/trash.png",
+            // HasRendererImage: false,
+            // ServiceUrl: "http://services1.arcgis.com/XhE4Nx2bBPScQrhF/arcgis/rest/services/StreetCleaning/FeatureServer/0",
+            // FieldNames: [{
+                // ServiceAvailability: [{
+                    // FieldName: "MONDAY",
+                    // DisplayText: "Mon"
+                // }, {
+                    // FieldName: "TUESDAY",
+                    // DisplayText: "Tue"
+                // }, {
+                    // FieldName: "WEDNESDAY",
+                    // DisplayText: "Wed"
+                // }, {
+                    // FieldName: "THURSDAY",
+                    // DisplayText: "Thu"
+                // }, {
+                    // FieldName: "FRIDAY",
+                    // DisplayText: "Fri"
+                // }, {
+                    // FieldName: "SATURDAY",
+                    // DisplayText: "Sat"
+                // }, {
+                    // FieldName: "SUNDAY",
+                    // DisplayText: "Sun"
+                // }]
+            // }, {
+                // Field: "Agency : ${AGENCY}"
+            // }, {
+                // Field: "Contact : ${CONTACT}"
+            // }, {
+                // Field: "Phone: ${PHONE}"
+            // }, {
+                // Links: [{
+                    // DisplayText: "Website",
+                    // FieldName: "AGENCYURL"
+                // }, {
+                    // DisplayText: "Email",
+                    // FieldName: "EMAIL"
+                // }]
+            // }
 
-            Color: "#FCD208",
-            isRendererColor: true,
-            LayerVisibility: true
-        },
-        RecyclingPickup: {
-            Name: "Recycling Pickup",
-            Image: "images/recycling.png",
-            HasRendererImage: false,
-            ServiceUrl: "http://tryitlive.arcgis.com/arcgis/rest/services/GovernmentServices/MapServer/10",
-            FieldNames: [{
-                ServiceAvailability: [{
-                    FieldName: "MONDAY",
-                    DisplayText: "Mon"
-                }, {
-                    FieldName: "TUESDAY",
-                    DisplayText: "Tue"
-                }, {
-                    FieldName: "WEDNESDAY",
-                    DisplayText: "Wed"
-                }, {
-                    FieldName: "THURSDAY",
-                    DisplayText: "Thu"
-                }, {
-                    FieldName: "FRIDAY",
-                    DisplayText: "Fri"
-                }, {
-                    FieldName: "SATURDAY",
-                    DisplayText: "Sat"
-                }, {
-                    FieldName: "SUNDAY",
-                    DisplayText: "Sun"
-                }]
-            }, {
-                Field: "Agency : ${AGENCY}"
-            }, {
-                Field: "Contact : ${CONTACT}"
-            }, {
-                Field: "Phone: ${PHONE}"
-            }, {
-                Links: [{
-                    DisplayText: "Website",
-                    FieldName: "AGENCYURL",
-                    type: "web"
-                }, {
-                    DisplayText: "Email",
-                    FieldName: "EMAIL",
-                    type: "mail"
-                }]
-            }],
-            Color: "#0000FF",
-            isRendererColor: true,
-            LayerVisibility: true
-        },
-        YardWastePickup: {
-            Name: "Yard Waste Pickup",
-            Image: "images/yardWaste.png",
-            HasRendererImage: false,
-            ServiceUrl: "http://tryitlive.arcgis.com/arcgis/rest/services/GovernmentServices/MapServer/12",
-            FieldNames: [{
-                ServiceAvailability: [{
-                    FieldName: "MONDAY",
-                    DisplayText: "Mon"
-                }, {
-                    FieldName: "TUESDAY",
-                    DisplayText: "Tue"
-                }, {
-                    FieldName: "WEDNESDAY",
-                    DisplayText: "Wed"
-                }, {
-                    FieldName: "THURSDAY",
-                    DisplayText: "Thu"
-                }, {
-                    FieldName: "FRIDAY",
-                    DisplayText: "Fri"
-                }, {
-                    FieldName: "SATURDAY",
-                    DisplayText: "Sat"
-                }, {
-                    FieldName: "SUNDAY",
-                    DisplayText: "Sun"
-                }]
-            }, {
-                Field: "Agency : ${AGENCY}"
-            }, {
-                Field: "Contact : ${CONTACT}"
-            }, {
-                Field: "Phone: ${PHONE}"
-            }, {
-                Links: [{
-                    DisplayText: "Website",
-                    FieldName: "AGENCYURL",
-                    type: "web"
-                }, {
-                    DisplayText: "Email",
-                    FieldName: "EMAIL",
-                    type: "mail"
-                }]
-            }],
-            Color: "#250517",
-            isRendererColor: true,
-            LayerVisibility: true
-        },
+            // ],
+
+            // Color: "#FCD208",
+            // isRendererColor: true,
+            // LayerVisibility: true
+        // },
+        // RecyclingPickup: {
+            // Name: "Recycling Pickup",
+            // Image: "images/recycling.png",
+            // HasRendererImage: false,
+            // ServiceUrl: "http://services1.arcgis.com/XhE4Nx2bBPScQrhF/arcgis/rest/services/StreetCleaning/FeatureServer/0",
+            // FieldNames: [{
+                // ServiceAvailability: [{
+                    // FieldName: "MONDAY",
+                    // DisplayText: "Mon"
+                // }, {
+                    // FieldName: "TUESDAY",
+                    // DisplayText: "Tue"
+                // }, {
+                    // FieldName: "WEDNESDAY",
+                    // DisplayText: "Wed"
+                // }, {
+                    // FieldName: "THURSDAY",
+                    // DisplayText: "Thu"
+                // }, {
+                    // FieldName: "FRIDAY",
+                    // DisplayText: "Fri"
+                // }, {
+                    // FieldName: "SATURDAY",
+                    // DisplayText: "Sat"
+                // }, {
+                    // FieldName: "SUNDAY",
+                    // DisplayText: "Sun"
+                // }]
+            // }, {
+                // Field: "Agency : ${AGENCY}"
+            // }, {
+                // Field: "Contact : ${CONTACT}"
+            // }, {
+                // Field: "Phone: ${PHONE}"
+            // }, {
+                // Links: [{
+                    // DisplayText: "Website",
+                    // FieldName: "AGENCYURL",
+                    // type: "web"
+                // }, {
+                    // DisplayText: "Email",
+                    // FieldName: "EMAIL",
+                    // type: "mail"
+                // }]
+            // }],
+            // Color: "#0000FF",
+            // isRendererColor: true,
+            // LayerVisibility: true
+        // },
+        // YardWastePickup: {
+            // Name: "Yard Waste Pickup",
+            // Image: "images/yardWaste.png",
+            // HasRendererImage: false,
+            // ServiceUrl: "http://services1.arcgis.com/XhE4Nx2bBPScQrhF/arcgis/rest/services/jurisdiction/FeatureServer/0",
+            // FieldNames: [{
+                // ServiceAvailability: [{
+                    // FieldName: "MONDAY",
+                    // DisplayText: "Mon"
+                // }, {
+                    // FieldName: "TUESDAY",
+                    // DisplayText: "Tue"
+                // }, {
+                    // FieldName: "WEDNESDAY",
+                    // DisplayText: "Wed"
+                // }, {
+                    // FieldName: "THURSDAY",
+                    // DisplayText: "Thu"
+                // }, {
+                    // FieldName: "FRIDAY",
+                    // DisplayText: "Fri"
+                // }, {
+                    // FieldName: "SATURDAY",
+                    // DisplayText: "Sat"
+                // }, {
+                    // FieldName: "SUNDAY",
+                    // DisplayText: "Sun"
+                // }]
+            // }, {
+                // Field: "Agency : ${AGENCY}"
+            // }, {
+                // Field: "Contact : ${CONTACT}"
+            // }, {
+                // Field: "Phone: ${PHONE}"
+            // }, {
+                // Links: [{
+                    // DisplayText: "Website",
+                    // FieldName: "AGENCYURL"
+                // }, {
+                    // DisplayText: "Email",
+                    // FieldName: "EMAIL"
+                // }]
+            // }],
+            // Color: "#250517",
+            // isRendererColor: true,
+            // LayerVisibility: true
+        // },
         StreetCleaning: {
-            Name: "Street Cleaning",
-            Image: "images/streetCleaning.png",
+            Name: "Police Jurisdiction Area",
+            Image: "images/police-car2-300x225.png",
             HasRendererImage: false,
-            ServiceUrl: "http://tryitlive.arcgis.com/arcgis/rest/services/GovernmentServices/MapServer/11",
+            ServiceUrl: "http://services1.arcgis.com/XhE4Nx2bBPScQrhF/arcgis/rest/services/jurisdiction/FeatureServer/0",
+			
             FieldNames: [{
                 ServiceAvailability: [{
-                    FieldName: "WEEKONE",
-                    DisplayText: "Week 1"
+                    FieldName: "SBSO_RC",
+                    DisplayText: "Rancho PD"
                 }, {
-                    FieldName: "WEEKTWO",
-                    DisplayText: "Week 2"
+                    FieldName: "SBSO_CO",
+                    DisplayText: "SB Sheriff"
                 }, {
-                    FieldName: "WEEKTHREE",
-                    DisplayText: "Week 3"
-                }, {
-                    FieldName: "WEEKFOUR",
-                    DisplayText: "Week 4"
-                }]
+                    FieldName: "RivSO",
+                    DisplayText: "Riv Sheriff"
+				}, {
+                    FieldName: "FonPD",
+                    DisplayText: "Fontana PD"
+				}, {
+                    FieldName: "OntPD",
+                    DisplayText: "Ontario PD"
+				}, {
+                    FieldName: "RialtoPD",
+                    DisplayText: "Rialto PD"
+                }
+				]
             }, {
-                Field: "Agency : ${AGENCY}"
+                Field: "Agency : ${NAME}"
             }, {
-                Field: "Contact : ${CONTACT}"
+                Field: "Address : ${FULLADDR}"
             }, {
-                Field: "Phone: ${PHONE}"
+                Field: "City : ${MUNICIPALITY}"				
             }, {
-                Links: [{
-                    DisplayText: "Website",
-                    FieldName: "AGENCYURL",
-                    type: "web"
-                }, {
-                    DisplayText: "Email",
-                    FieldName: "EMAIL",
-                    type: "mail"
-                }]
+                Field: "Phone: ${Phone}"
+            // }, {
+                // Links: [{
+                    // DisplayText: "Website",
+                    // FieldName: "ParkURL"
+                // }, {
+                    // DisplayText: "Email",
+                    // FieldName: "EMAIL"
+                // }]
             }],
             Color: "#00FF00",
             isRendererColor: true,
             LayerVisibility: true
         },
-        RailroadStations: {
-            Name: "Railroad Stations",
-            Image: "images/RailStation.png",
+        PoliceStations: {
+            Name: "Police Stations",
+            Image: "images/policeStations.png",
             HasRendererImage: false,
-            ServiceUrl: "http://tryitlive.arcgis.com/arcgis/rest/services/GovernmentServices/MapServer/0",
-            distance: 4,
+            ServiceUrl: "http://services1.arcgis.com/XhE4Nx2bBPScQrhF/ArcGIS/rest/services/getdirectionsPD/FeatureServer/1",
+            distance: 25,
             FieldNames: [{
                 FieldName: "NAME"
             }, {
                 FieldName: "FULLADDR"
             }, {
-                FieldName: "PHONE"
-            }],
-            LayerVisibility: true,
-            ShowBeyondBuffer: true
-        },
-        RecyclingFacility: {
-            Name: "Recycling Facilities",
-            Image: "images/RecyclingFacility.png",
-            HasRendererImage: false,
-            ServiceUrl: "http://tryitlive.arcgis.com/arcgis/rest/services/GovernmentServices/MapServer/1",
-            distance: 4,
-            FieldNames: [{
-                FieldName: "NAME"
-            }, {
-                FieldName: "FULLADDR"
-            }, {
-                FieldName: "PHONE"
-            }],
-            LayerVisibility: true,
-            ShowBeyondBuffer: true
-        },
-        DeptPublicWorks: {
-            Name: "Department of Public Works",
-            Image: "images/DeptPW.png",
-            HasRendererImage: false,
-            ServiceUrl: "http://tryitlive.arcgis.com/arcgis/rest/services/GovernmentServices/MapServer/2",
-            distance: 4,
-            FieldNames: [{
-                FieldName: "NAME"
-            }, {
-                FieldName: "FULLADDR"
-            }, {
-                FieldName: "PHONE"
-            }],
-            LayerVisibility: true,
-            ShowBeyondBuffer: true
-        },
-        Museum: {
-            Name: "Museum",
-            Image: "images/Museum.png",
-            HasRendererImage: false,
-            ServiceUrl: "http://tryitlive.arcgis.com/arcgis/rest/services/GovernmentServices/MapServer/3",
-            distance: 4,
-            FieldNames: [{
-                FieldName: "NAME"
-            }, {
-                FieldName: "FULLADDR"
-            }, {
-                FieldName: "PHONE"
-            }],
-            LayerVisibility: true,
-            ShowBeyondBuffer: true
-        },
-        CommunityCenter: {
-            Name: "Community Centers",
-            Image: "images/CommunityCenter.png",
-            HasRendererImage: false,
-            ServiceUrl: "http://tryitlive.arcgis.com/arcgis/rest/services/GovernmentServices/MapServer/4",
-            distance: 4,
-            FieldNames: [{
-                FieldName: "NAME"
-            }, {
-                FieldName: "FULLADDR"
-            }, {
-                FieldName: "PHONE"
-            }],
-            LayerVisibility: true,
-            ShowBeyondBuffer: true
-        },
-        PostOffices: {
-            Name: "Post Offices",
-            Image: "images/postOffice.png",
-            HasRendererImage: false,
-            ServiceUrl: "http://tryitlive.arcgis.com/arcgis/rest/services/GovernmentServices/MapServer/5",
-            distance: 4,
-            FieldNames: [{
-                FieldName: "NAME"
-            }, {
-                FieldName: "FULLADDR"
-            }, {
-                FieldName: "PHONE"
+                FieldName: "OPERDAYS"
             }],
             LayerVisibility: true,
             ShowBeyondBuffer: true
         },
         Libraries: {
-            Name: "Libraries",
-            Image: "images/library.png",
+            Name: "CHP",
+            Image: "images/CHP.gif",
             HasRendererImage: false,
-            ServiceUrl: "http://tryitlive.arcgis.com/arcgis/rest/services/GovernmentServices/MapServer/6",
-            distance: 4,
+            ServiceUrl: "http://services1.arcgis.com/XhE4Nx2bBPScQrhF/ArcGIS/rest/services/getdirectionsPD/FeatureServer/2",
+            distance: 40,
             FieldNames: [{
                 FieldName: "NAME"
             }, {
                 FieldName: "FULLADDR"
             }, {
-                FieldName: "PHONE"
+                FieldName: "OPERDAYS"
             }],
             LayerVisibility: true,
             ShowBeyondBuffer: true
         },
-        PoliceStations: {
-            Name: "Police Stations",
-            Image: "images/policeStations.png",
+        PostOffices: {
+            Name: "Courts",
+            Image: "images/court2.gif",
             HasRendererImage: false,
-            ServiceUrl: "http://tryitlive.arcgis.com/arcgis/rest/services/GovernmentServices/MapServer/7",
-            distance: 4,
+            ServiceUrl: "http://services1.arcgis.com/XhE4Nx2bBPScQrhF/ArcGIS/rest/services/getdirectionsPD/FeatureServer/3",
+            distance: 25,
             FieldNames: [{
                 FieldName: "NAME"
             }, {
                 FieldName: "FULLADDR"
             }, {
-                FieldName: "PHONE"
+                FieldName: "OPERDAYS"
             }],
             LayerVisibility: true,
             ShowBeyondBuffer: true
         },
         FireStations: {
-            Name: "Fire Stations",
-            Image: "images/fireStations.png",
+            Name: "Gov Services",
+            Image: "images/appIcon.png",
             HasRendererImage: false,
-            ServiceUrl: "http://tryitlive.arcgis.com/arcgis/rest/services/GovernmentServices/MapServer/8",
+            ServiceUrl: "http://services1.arcgis.com/XhE4Nx2bBPScQrhF/ArcGIS/rest/services/getdirectionsPD/FeatureServer/4",
             distance: 4,
             FieldNames: [{
                 FieldName: "NAME"
             }, {
                 FieldName: "FULLADDR"
             }, {
-                FieldName: "PHONE"
+                FieldName: "OPERDAYS"
+            }],
+            LayerVisibility: true,
+            ShowBeyondBuffer: true
+        },
+		DetentionFacility: {
+            Name: "Detention Facility",
+            Image: "images/jail2-300x300.png",
+            HasRendererImage: false,
+            ServiceUrl: "http://services1.arcgis.com/XhE4Nx2bBPScQrhF/ArcGIS/rest/services/getdirectionsPD/FeatureServer/5",
+            distance: 25,
+            FieldNames: [{
+                FieldName: "NAME"
+            }, {
+                FieldName: "FULLADDR"
+            }, {
+                FieldName: "OPERDAYS"
+            }],
+            LayerVisibility: true,
+            ShowBeyondBuffer: true
+        },
+		Juvenile: {
+            Name: "Juvenile",
+            Image: "images/jail-300x300.png",
+            HasRendererImage: false,
+            ServiceUrl: "http://services1.arcgis.com/XhE4Nx2bBPScQrhF/ArcGIS/rest/services/getdirectionsPD/FeatureServer/6",
+            distance: 25,
+            FieldNames: [{
+                FieldName: "NAME"
+            }, {
+                FieldName: "FULLADDR"
+            }, {
+                FieldName: "OPERDAYS"
+            }],
+            LayerVisibility: true,
+            ShowBeyondBuffer: true
+        },	
+		ImpoundFacility: {
+            Name: "Impound Facility",
+            Image: "images/towtruck.jpg",
+            HasRendererImage: false,
+            ServiceUrl: "http://services1.arcgis.com/XhE4Nx2bBPScQrhF/ArcGIS/rest/services/getdirectionsPD/FeatureServer/7",
+            distance: 25,
+            FieldNames: [{
+                FieldName: "NAME"
+            }, {
+                FieldName: "FULLADDR"
+            }, {
+                FieldName: "OPERDAYS"
+            }],
+            LayerVisibility: true,
+            ShowBeyondBuffer: true
+        },		
+        Hospitals: {
+            Name: "Hospitals",
+            Image: "images/hospital.png",
+            HasRendererImage: false,
+            ServiceUrl: "http://services1.arcgis.com/XhE4Nx2bBPScQrhF/arcgis/rest/services/getdirectionsPD/FeatureServer/0",
+            distance: 25,
+            FieldNames: [{
+                FieldName: "NAME"
+            }, {
+                FieldName: "FULLADDR"
+            }, {
+                FieldName: "OPERDAYS"
             }],
             LayerVisibility: true,
             ShowBeyondBuffer: true
@@ -521,12 +505,12 @@ dojo.declare("js.Config", null, {
     // ServiceUrl is the REST end point for the reference overlay layer
     // DisplayOnLoad setting this will show the reference overlay layer on load
     ReferenceOverlayLayer: {
-        ServiceUrl: "http://tryitlive.arcgis.com/arcgis/rest/services/Trails/MapServer",
+        ServiceUrl: "http://services1.arcgis.com/XhE4Nx2bBPScQrhF/arcgis/rest/services/FIRE/FeatureServer/0",
         DisplayOnLoad: false
     },
 
     //Set required zoom level.
-    ZoomLevel: 6,
+    ZoomLevel: 16,
 
     //Set Address to be displayed on mobile callout.
     CallOutAddress: "Street: ${Address}",
@@ -545,7 +529,7 @@ dojo.declare("js.Config", null, {
         TinyURLServiceURL: "http://api.bit.ly/v3/shorten?login=esri&apiKey=R_65fd9891cd882e2a96b99d4bda1be00e&uri=${0}&format=json",
         TinyURLResponseAttribute: "data.url",
         FacebookShareURL: "http://www.facebook.com/sharer.php?u=${0}&t=My%20Government%20Services",
-        TwitterShareURL: "http://mobile.twitter.com/compose/tweet?status=My%20Government%20Services ${0}",
-        ShareByMailLink: "mailto:%20?subject=Check%20out%20this%20map!&body=${0}"
+        TwitterShareURL: "http://mobile.twitter.com/compose/tweet?status=My%20Government%20Services ${0}",       
+        ShareByMailLink: "mailto:%20?subject=Checkout%20this%20map!&body=${0}"
     }
 });
