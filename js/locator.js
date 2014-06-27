@@ -1,25 +1,26 @@
-﻿/** @license
- | Version 10.2
- | Copyright 2012 Esri
- |
- | Licensed under the Apache License, Version 2.0 (the "License");
- | you may not use this file except in compliance with the License.
- | You may obtain a copy of the License at
- |
- |    http://www.apache.org/licenses/LICENSE-2.0
- |
- | Unless required by applicable law or agreed to in writing, software
- | distributed under the License is distributed on an "AS IS" BASIS,
- | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- | See the License for the specific language governing permissions and
- | limitations under the License.
- */
+/** @license
+| Version 10.1.1
+| Copyright 2012 Esri
+|
+| Licensed under the Apache License, Version 2.0 (the "License");
+| you may not use this file except in compliance with the License.
+| You may obtain a copy of the License at
+|
+|    http://www.apache.org/licenses/LICENSE-2.0
+|
+| Unless required by applicable law or agreed to in writing, software
+| distributed under the License is distributed on an "AS IS" BASIS,
+| WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+| See the License for the specific language governing permissions and
+| limitations under the License.
+*/
 
 //Get candidate results for searched address
-
-function LocateAddress() {
+function StartAddress() {
+	
     var thisSearchTime = lastSearchTime = (new Date()).getTime();
     dojo.byId("imgSearchLoader").style.display = "block";
+
     map.infoWindow.hide();
     selectedGraphic = null;
     RemoveChildren(dojo.byId('tblAddressResults'));
@@ -31,8 +32,7 @@ function LocateAddress() {
         return;
     }
     var address = [];
-    //Set text from search box as input parameter for request
-    address[locatorSettings.Locators[0].LocatorParameters] = dojo.byId('txtAddress').value;
+    address[locatorSettings.Locators[0].LocatorParamaters] = dojo.byId('txtAddress').value;
     var locator = new esri.tasks.Locator(locatorSettings.Locators[0].LocatorURL);
     locator.outSpatialReference = map.spatialReference;
     locator.addressToLocations(address, [locatorSettings.Locators[0].CandidateFields], function (candidates) {
@@ -40,8 +40,49 @@ function LocateAddress() {
         if (thisSearchTime < lastSearchTime) {
             return;
         }
-        //Callback function to fire when candidates are returned
+		alert("here");
         ShowLocatedAddress(candidates);
+    },
+
+    function (err) {
+        HideProgressIndicator();
+        dojo.byId("imgSearchLoader").style.display = "none";
+    });
+
+}
+function LocateAddress() {
+	
+    var thisSearchTime = lastSearchTime = (new Date()).getTime();
+	//txtAddress = "9353 Sierra Ave Fontana CA 92335";
+	dojo.byId("imgSearchLoader").style.display = "block";
+    map.infoWindow.hide();
+    selectedGraphic = null;
+    RemoveChildren(dojo.byId('tblAddressResults'));
+    RemoveScrollBar(dojo.byId('divAddressScrollContainer'));
+    if (dojo.byId("txtAddress").value.trim() === '') {
+        dojo.byId("imgSearchLoader").style.display = "none";
+        dojo.byId('txtAddress').focus();
+        dojo.byId("imgLocate").src = "images/locate.png";
+        return;
+    }
+    var address = [];
+	var hold = dojo.byId('txtAddress').value;
+	address[locatorSettings.Locators[0].LocatorParamaters] = "8353 Sierra Ave, Fontana, CA, 92335"; //dojo.byId('txtAddress').value;
+    var locator = new esri.tasks.Locator(locatorSettings.Locators[0].LocatorURL);
+    locator.outSpatialReference = map.spatialReference;
+    locator.addressToLocations(address, [locatorSettings.Locators[0].CandidateFields], function (candidates) {
+        // Discard searches made obsolete by new typing from user
+        if (thisSearchTime < lastSearchTime) {
+            return;
+        }
+		var candidate = candidates[0];
+		dojo.byId("txtAddress").value = "7353 Sierra Ave, Fontana, CA, 92335";
+        dojo.byId('txtAddress').setAttribute("defaultAddress", "7353 Sierra Ave, Fontana, CA, 92335");
+		mapPoint = new esri.geometry.Point(candidate.location.x, candidate.location.y, map.spatialReference);
+        dojo.byId("txtAddress").setAttribute("defaultAddressTitle", "7353 Sierra Ave, Fontana, CA, 92335");
+        lastSearchString = dojo.byId("txtAddress").value.trim();
+        LocateAddressOnMap();
+        //ShowLocatedAddress(candidates);
     },
 
     function (err) {
@@ -54,7 +95,7 @@ function LocateAddress() {
 //Populate candidate address list in address container
 
 function ShowLocatedAddress(candidates) {
-    //Clear previous results
+	alert ("ShowLocate");
     RemoveChildren(dojo.byId('tblAddressResults'));
     RemoveScrollBar(dojo.byId('divAddressScrollContainer'));
     if (dojo.byId("txtAddress").value.trim() === '') {
@@ -72,38 +113,22 @@ function ShowLocatedAddress(candidates) {
         var candidatesLength = 0;
         counter = 0;
         for (var i = 0; i < candidates.length; i++) {
-            //Make sure the minimum match score was met
             if (candidates[i].score > locatorSettings.Locators[0].AddressMatchScore) {
                 var candidate = candidates[i];
                 var tempMapPoint;
-                var bmap = null;
-                //Create a new point geometry from candidate verticies
+                var bmap;
                 tempMapPoint = new esri.geometry.Point(candidate.location.x, candidate.location.y, map.spatialReference);
-
-                // Use the first visible basemap layer as our extents bounds
-                dojo.some(baseMapLayers, function(aBmap) {
-                    var layer;
-                    if (aBmap.Key) {
-                        layer = map.getLayer(aBmap.Key);
-                        if (layer && layer.visible) {
-                            bmap = layer;
-                            return true;
-                        }
+                for (var bMap = 0; bMap < baseMapLayers.length; bMap++) {
+                    if (map.getLayer(baseMapLayers[bMap].Key).visible) {
+                        bmap = baseMapLayers[bMap].Key;
                     }
-                    return false;
-                });
-
-                // If there's a visible basemap, use it for the extents check
-                if (bmap && !bmap.fullExtent.contains(tempMapPoint)) {
+                }
+                if (!map.getLayer(bmap).fullExtent.contains(tempMapPoint)) {
                     tempMapPoint = null;
                     candidatesLength++;
-
                 } else {
-                    // Screen by the list of accepted locators
                     for (var j in locatorSettings.Locators[0].LocatorFieldValues) {
-                        //Test to make sure matched address was returned by a desired locator
                         if (candidates[i].attributes[locatorSettings.Locators[0].LocatorFieldName] === locatorSettings.Locators[0].LocatorFieldValues[j]) {
-                            // Add the result to the display
                             counter++;
                             var tr = document.createElement("tr");
                             tBody.appendChild(tr);
@@ -116,16 +141,14 @@ function ShowLocatedAddress(candidates) {
                             td1.setAttribute("x", candidate.location.x);
                             td1.setAttribute("y", candidate.location.y);
                             td1.setAttribute("address", dojo.string.substitute(locatorSettings.Locators[0].DisplayField, candidate.attributes));
-                            //Don't start working with geometry of candidates until someone clicks on an address
                             td1.onclick = function () {
-                                dojo.byId("txtAddress").value = this.innerHTML;
-                                dojo.byId('txtAddress').setAttribute("defaultAddress", this.innerHTML);
-                                mapPoint = new esri.geometry.Point(this.getAttribute("x"), this.getAttribute("y"), map.spatialReference);
-                                dojo.byId("txtAddress").setAttribute("defaultAddressTitle", this.innerHTML);
+								alert(this.innerHTML);
+                                dojo.byId("txtAddress").value = "7353 Sierra Ave, Fontana, CA, 92335";
+                                dojo.byId('txtAddress').setAttribute("defaultAddress", "7353 Sierra Ave, Fontana, CA, 92335");
+                                mapPoint = new esri.geometry.Point(candidate.location.x, candidate.location.y, map.spatialReference);
+                                dojo.byId("txtAddress").setAttribute("defaultAddressTitle", "7353 Sierra Ave, Fontana, CA, 92335");
                                 lastSearchString = dojo.byId("txtAddress").value.trim();
-                                //Call external function for drawing the graphic
                                 LocateAddressOnMap();
-                                HideProgressIndicator();
                             };
                             tr.appendChild(td1);
                         }
@@ -164,7 +187,6 @@ function ShowLocatedAddress(candidates) {
 //Locate searched address on map with pushpin graphic
 
 function LocateAddressOnMap() {
-    //Clear old graphics
     map.getLayer(tempGraphicsLayerId).clear();
     HideServiceLayers();
     map.infoWindow.hide();
@@ -174,26 +196,24 @@ function LocateAddressOnMap() {
         dojo.byId("divCarouselDataContent").style.left = "0px";
         ResetSlideControls();
     }
-    //Set symbology from configuration file
     var symbol = new esri.symbol.PictureMarkerSymbol(locatorSettings.LocatorMarkupSymbolPath, locatorSettings.MarkupSymbolSize.width, locatorSettings.MarkupSymbolSize.height, locatorSettings.MarkupSymbolSize.width, locatorSettings.MarkupSymbolSize.height);
-    //mapPoint was defined with candidate geometry in ShowLocatedAddress() function above
     var graphic = new esri.Graphic(mapPoint, symbol, null, null);
     map.getLayer(tempGraphicsLayerId).add(graphic);
     HideAddressContainer();
-    //Center and zoom on the new point
     map.setLevel(zoomLevel);
     map.centerAt(mapPoint);
     if (!isMobileDevice) {
         WipeInResults();
         ShowProgressIndicator();
         QueryService(mapPoint);
+		HideProgressIndicator();
     } else {
         CreateCarousel();
         GetServices();
     }
 }
 
-//Get the extent based on the map point
+//Get the extent based on the map point 
 
 function GetExtent(point) {
     var xmin = point.x;
@@ -208,7 +228,7 @@ function GetExtent(point) {
 function ExecuteQueryTask() {
     ShowProgressIndicator();
     var queryTask = new esri.tasks.QueryTask(services[window.location.toString().split("$point=")[1].split("$selectedPod=")[1].split("$featureID=")[0]].ServiceUrl);
-    var query = new esri.tasks.Query;
+	var query = new esri.tasks.Query;
     query.outSpatialReference = map.spatialReference;
     query.where = map.getLayer(window.location.toString().split("$point=")[1].split("$selectedPod=")[1].split("$featureID=")[0]).objectIdField + "=" + featureID;
     query.outFields = ["*"];
@@ -252,7 +272,7 @@ function ExecuteRouteQueryTask() {
     });
 }
 
-//Query the features while sharing route with infowindow
+//Query the features while sharing route with infowindow 
 
 function ExecuteRouteFeatureQueryTask() {
     ShowProgressIndicator();
