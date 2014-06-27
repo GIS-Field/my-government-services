@@ -1,21 +1,21 @@
-﻿/** @license
- | Version 10.2
- | Copyright 2012 Esri
- |
- | Licensed under the Apache License, Version 2.0 (the "License");
- | you may not use this file except in compliance with the License.
- | You may obtain a copy of the License at
- |
- |    http://www.apache.org/licenses/LICENSE-2.0
- |
- | Unless required by applicable law or agreed to in writing, software
- | distributed under the License is distributed on an "AS IS" BASIS,
- | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- | See the License for the specific language governing permissions and
- | limitations under the License.
- */
+/** @license
+| Version 10.1.1
+| Copyright 2012 Esri
+|
+| Licensed under the Apache License, Version 2.0 (the "License");
+| you may not use this file except in compliance with the License.
+| You may obtain a copy of the License at
+|
+|    http://www.apache.org/licenses/LICENSE-2.0
+|
+| Unless required by applicable law or agreed to in writing, software
+| distributed under the License is distributed on an "AS IS" BASIS,
+| WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+| See the License for the specific language governing permissions and
+| limitations under the License.
+*/
 var horizontalPosition = 0; //variable for storing the scrolling position of scrolling container
-var newLeft = 0; //variable for storing the left position of the carousel content
+var newLeft = 0; //variable for storing the left position of the carousel content 
 var touchStart = false; //flag for setting the touch events
 var discnt; //variable used for disconnecting the dojo connect event
 var infoContent; //variable to store info content details
@@ -284,9 +284,9 @@ function ShowHideResult(imgToggle) {
             return;
         }
         if (imgToggle.getAttribute("state") == "minimized") {
-            WipeInResults(); // maximize
+            WipeInResults(); // maximize                       
         } else {
-            WipeOutResults(); //minimize
+            WipeOutResults(); //minimize        
         }
     }
 }
@@ -414,7 +414,7 @@ function CreateCarouselPod() {
     FixBottomPanelWidth();
 }
 
-//Position bottom Pods
+//Position bottom Pods 
 
 function ShowServicePods(_this, share) {
     map.infoWindow.hide();
@@ -517,14 +517,6 @@ function CreateServicePolygonInfo(service, feature, key) {
             var trLink = dojo.create("tr");
             tbodyLink.appendChild(trLink);
             for (var m = 0; m < service.FieldNames[i].Links.length; m++) {
-                // Insert separator from previous cell at end of current row
-                if(m > 0) {
-                    var span = trLink.insertCell(-1);
-                    span.style.borderLeft = "1px solid white";
-                    span.style.paddingRight = "5px";
-                }
-
-                // Create cell for link
                 var tdHref = dojo.create("td");
                 tdHref.style.paddingRight = "5px";
                 tdHref.style.cursor = "pointer";
@@ -541,17 +533,60 @@ function CreateServicePolygonInfo(service, feature, key) {
                 trLink.appendChild(tdHref);
                 tdHref.innerHTML = service.FieldNames[i].Links[m].DisplayText;
             }
-        } else {
-            var attribute_switch;
+            var span = trLink.insertCell(1);
+            span.style.borderLeft = "1px solid white";
+            span.style.paddingRight = "5px";
+        } else if (service.FieldNames[i].ServiceScheduled) {
+			for (var mm = 0; mm < service.FieldNames[i].ServiceScheduled.length; mm++) {
+				var tdDisplayText = dojo.create("td");
+				//tr.appendChild(tdDisplayText);
+				tdDisplayText.setAttribute("info", service.FieldNames[i].ServiceScheduled[mm].FieldName);
+				if (mm == 0) { var basedate = feature.attributes[tdDisplayText.getAttribute("info")];} 
+				if (mm == 1) { var weeklyServiceFlag = feature.attributes[tdDisplayText.getAttribute("info")];}
+				if (mm == 2) { var workingday = feature.attributes[tdDisplayText.getAttribute("info")];}
+            }
+			
+			if(weeklyServiceFlag == workingday ) {
+				tr.appendChild(tdDisplayText);
+				tdDisplayText.innerHTML = 'The next street sweeping for your selected area will be ' + workingday ; 
+			} 
+			else  { 
+				var currDate = new Date(); 
+				basedate2 = new Date(basedate);
+				currDate.setDate(Math.floor(currDate.getDate()) + ((14 - (Math.floor((currDate.getTime() - basedate2.getTime()) / 86400000) % 14)))); 
+				var strDate = currDate.toString(); 
+				var arrDate = strDate.split(' '); 
+				var newdate = dojo.date.locale.format(basedate2, {datePattern: "yyMMdd", selector: "date"});
+				tr.appendChild(tdDisplayText);
+				tdDisplayText.innerHTML = 'The street sweeping for your selected location will be <b>' + arrDate[0] + ' ' + arrDate[1] + ' ' + arrDate[2] + '</b>.'; 
+				// Need to add 'If your sweeping day falls on a holiday, it will not be swept for that sweeping period:'
+				//    			New Year's Day		Memorial Day		Fourth of July
+				//				Labor Day			Thanksgiving Day	Christmas Day   
+				var tr = dojo.create("tr");
+				tableInfoBody.appendChild(tr);
+				var tdDisplayText = dojo.create("td");
+				tr.appendChild(tdDisplayText);
+				tdDisplayText.innerHTML = 'If your sweeping day falls on a following holiday, it will not be swept for that sweeping period:' ;
+				var tr = dojo.create("tr");
+				tableInfoBody.appendChild(tr);
+				var tdDisplayText = dojo.create("td");
+				tr.appendChild(tdDisplayText);
+				tdDisplayText.innerHTML = 'New Years Day,   Memorial Day,   Fourth of July' ;
+				var tr = dojo.create("tr");
+				tableInfoBody.appendChild(tr);
+				var tdDisplayText = dojo.create("td");
+				tr.appendChild(tdDisplayText);
+				tdDisplayText.innerHTML = 'Labor Day, Thanksgiving Day, Christmas Day' ;
+				var tr = dojo.create("tr");
+				tableInfoBody.appendChild(tr);
+				var tdDisplayText = dojo.create("td");
+				tr.appendChild(tdDisplayText);
+				tdDisplayText.innerHTML = 'City of Fontana, Public Works Dept.' ;
+				}
+		} else {
             var tdDisplayText = dojo.create("td");
             tr.appendChild(tdDisplayText);
-            try{
-                attribute_switch = dojo.string.substitute(service.FieldNames[i].Field, feature.attributes);
-            }
-            catch(err){
-                attribute_switch = "";
-            }
-            tdDisplayText.innerHTML = attribute_switch
+            tdDisplayText.innerHTML = dojo.string.substitute(service.FieldNames[i].Field, feature.attributes);
         }
     }
     dojo.byId("divContent" + key).appendChild(tableInfo);
@@ -703,7 +738,7 @@ function CreateServicePointInfo(service, feature, key, distance, featureGeometry
     CreateScrollbar(dojo.byId("divContentHolder" + key), dojo.byId("divContent" + key));
 }
 
-//Show route on PC browser
+//Show route on PC browser 
 
 function ShowRouteServices(key, _this, feature, featureGeometry, service, share) {
     RemoveScrollBar(dojo.byId("divContentHolder" + key));
@@ -736,6 +771,7 @@ function ShowRouteServices(key, _this, feature, featureGeometry, service, share)
     if (!isMobileDevice) {
         if (feature[service.FieldNames[0].FieldName]) {
             dojo.byId("tdDirectionsListName" + key).innerHTML = 'Directions to ' + feature[service.FieldNames[0].FieldName];
+			headerstr = 'Directions to ' + feature[service.FieldNames[0].FieldName];
         } else {
             if (_this.getAttribute('featureName')) {
                 dojo.byId("tdDirectionsListName" + key).innerHTML = 'Directions to ' + _this.getAttribute('featureName');
@@ -777,7 +813,7 @@ function ShowMblRouteService(key, featurePoint, destName) {
 
 }
 
-//Hide the directions container
+//Hide the directions container 
 
 function hidePreviousDirections(key) {
     for (var index in services) {
@@ -801,7 +837,7 @@ function fadeOut(container) {
     dojo.replaceClass(container, "fadeOut", "fadeIn");
 }
 
-//Display map layers
+//Display map layers 
 
 function ShowServiceLayer(layer) {
     if (!layer) {
@@ -819,7 +855,8 @@ function ShowServiceLayer(layer) {
             } else {
                 map.setExtent(GetExtentFromPolygon(map.getLayer(layer).getSelectedFeatures()[0].geometry.getExtent().expand(3)));
             }
-            map.getLayer(layer).show();
+            dojo.byId(layer + "_layer").style.visibility = "visible";
+            dojo.byId(layer + "_layer").style.display = "block";
             if (isMobileDevice) {
                 var center = map.getLayer(layer).graphics[0].geometry.getExtent().getCenter();
                 selectedGraphic = center;
@@ -828,7 +865,7 @@ function ShowServiceLayer(layer) {
             }
         }
     } else {
-        map.getLayer(layer).show();
+        dojo.byId(layer + "_layer").style.visibility = "visible";
     }
 }
 
@@ -861,7 +898,7 @@ function GetExtentFromPolygon(extent) {
     return new esri.geometry.Extent(xmin, ymin, xmax, ymax, map.spatialReference);
 }
 
-//Show ripple on mouse over in desktop and tablet browser
+//Show ripple on mouse over in desktop and tablet browser 
 
 function GlowRipple(control, rippleColor) {
     HideRipple();
@@ -900,7 +937,7 @@ function HideRipple() {
 
 function ClearAllIntervals() {
     for (var i = 0; i < intervalIDs.length; i++) {
-        clearInterval(intervalIDs[i]);
+        clearTimeout(intervalIDs[i]);
         delete intervalIDs[i];
     }
     intervalIDs.length = 0;
@@ -924,6 +961,30 @@ function DisplayDirections(evt) {
             divImage.id = 'divDirectionsBack' + key;
             dojo.byId("divDirectionsContainer" + key).appendChild(divImage);
 
+			/// Need to get printing working here 
+			var imgBack1 = dojo.create('img');
+            divImage.appendChild(imgBack1);
+
+            imgBack1.id = 'imgDirectionsList' + key;
+            imgBack1.src = 'images/imgPrint.png';
+            imgBack1.className = "imgCarouselHeader";
+            imgBack1.style.cursor = 'pointer';
+            imgBack1.title = 'Print';
+            // HDA ticket 999993073. C Chernos - 24 June 2014. The PD kiosk has an attached printer, model HP 2055dn. Print requests should be made
+            // without opening the print dialogue box.
+            imgBack1.onclick = function(evt) {            	
+            	ShowModal('divDirectionsContainer'+key);
+            	//alert('click event fired');
+            	// Check if the browser being used is some flavour of IE. If so, execute the VBS function 'printNoDialogueBox' in default.htm.
+            	//if(window.navigator.userAgent.indexOf("MSIE ") > -1) {
+            	//    printNoDialogueBox(); 
+            	//}
+		//alert('after click event');           	
+            	//window.print();
+            	//window.close();
+            }
+            // End HDA ticket 999993073.
+            
             var imgBack = dojo.create('img');
             divImage.appendChild(imgBack);
 
@@ -1096,7 +1157,7 @@ function QueryRecords(key, service, mapPoint) {
     query.outFields = ["*"];
     query.returnGeometry = true;
     map.getLayer(key).selectFeatures(query, esri.layers.FeatureLayer.SELECTION_NEW, function (features) {
-        map.getLayer(key).hide();
+        dojo.byId(key + "_layer").style.visibility = "hidden";
         counter--;
         if (features.length > 0) {
             if (!isMobileDevice) {
@@ -1135,12 +1196,6 @@ function BufferRadius(mapPoint, index, serviceInfo) {
     params.geometries = [mapPoint];
     params.distances = [serviceInfo.distance];
     params.unit = esri.tasks.GeometryService.UNIT_STATUTE_MILE;
-    //if map is Web Mercator, use WGS84 to buffer instead
-    if (map.spatialReference.wkid == 102100) {
-        params.bufferSpatialReference = new esri.SpatialReference({"wkid":4326});
-        params.geodesic = true;
-    }
-    else
     params.bufferSpatialReference = map.spatialReference;
     params.outSpatialReference = map.spatialReference;
     geometryService.buffer(params, function (geometry) {
@@ -1152,7 +1207,9 @@ function BufferRadius(mapPoint, index, serviceInfo) {
         query.returnGeometry = true;
         map.getLayer(index).selectFeatures(query, esri.layers.FeatureLayer.SELECTION_NEW, function (featureset) {
             counter--;
-            map.getLayer(index).hide();
+            if (dojo.byId(index + "_layer")) {
+                dojo.byId(index + "_layer").style.visibility = "hidden";
+            }
             var featureSet = [];
             for (var i = 0; i < featureset.length; i++) {
                 for (var j in featureset[i].attributes) {
@@ -1457,7 +1514,7 @@ function CreateListLayOut() {
     }
 }
 
-//Clear the layers and the data when ever the user click on close icon in the mobile header
+//Clear the layers and the data when ever the user click on close icon in the mobile header 
 
 function HideMainContainer() {
     map.infoWindow.hide();
@@ -1541,7 +1598,7 @@ function ToggleHeaderIcons(key) {
     CreateScrollbar(dojo.byId("divDataListContainer"), dojo.byId("divDataListContent"));
 }
 
-//Get the extent based on the map point
+//Get the extent based on the map point 
 
 function GetBrowserMapExtent(mapPoint) {
     var width = map.extent.getWidth();
