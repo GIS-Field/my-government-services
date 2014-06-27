@@ -1,19 +1,19 @@
-﻿/** @license
- | Version 10.2
- | Copyright 2012 Esri
- |
- | Licensed under the Apache License, Version 2.0 (the "License");
- | you may not use this file except in compliance with the License.
- | You may obtain a copy of the License at
- |
- |    http://www.apache.org/licenses/LICENSE-2.0
- |
- | Unless required by applicable law or agreed to in writing, software
- | distributed under the License is distributed on an "AS IS" BASIS,
- | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- | See the License for the specific language governing permissions and
- | limitations under the License.
- */
+/** @license
+| Version 10.1.1
+| Copyright 2012 Esri
+|
+| Licensed under the Apache License, Version 2.0 (the "License");
+| you may not use this file except in compliance with the License.
+| You may obtain a copy of the License at
+|
+|    http://www.apache.org/licenses/LICENSE-2.0
+|
+| Unless required by applicable law or agreed to in writing, software
+| distributed under the License is distributed on an "AS IS" BASIS,
+| WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+| See the License for the specific language governing permissions and
+| limitations under the License.
+*/
 dojo.require("dojo.date.locale");
 dojo.require("dojo.window");
 dojo.require("dojo.number");
@@ -30,22 +30,21 @@ dojo.require("js.date");
 dojo.require("mobile.InfoWindow");
 
 /*Global variables*/
-var map; //variable to store map object
+var map; //variable to store map object   
 var isBrowser = false; //This variable is set to true when the app is running on desktop browsers
 var isiOS = false; //flag set for ios devices(ipad, iphone)
 var isMobileDevice = false; //This variable is set to true when the app is running on mobile device
 var isTablet = false; //This variable is set to true when the app is running on tablets
-var isAndroidTablet = false; //This variable will be set to 'true' when application is accessed from android tablet device
-var baseMapLayers; //Variable for storing base map layers
+var baseMapLayers; //Variable for storing base map layers      
 var fontSize; //variable for storing font sizes for all devices.
 var infoBoxWidth; //variable to store the width of the carousel pod
-var mapPoint; //variable to store map point
+var mapPoint; //variable to store map point 
 var selectedGraphic = null; //variable to store selected graphics
 var mapSharingOptions; //variable for storing the tiny service URL
-var geometryService; //variable to store the Geometry service
-var messages; //variable used for storing the error messages
+var geometryService; //variable to store the Geometry service 
+var messages; //variable used for storing the error messages      
 var showNullValueAs; //variable to store the default value for replacing null values
-var tempGraphicsLayerId = 'tempGraphicsLayerID'; //variable to store graphics layer ID
+var tempGraphicsLayerId = 'tempGraphicsLayerID'; //variable to store graphics layer ID    
 var services; //variable to store services from the config file
 var numberOfServices = 0; //number of services
 var routeParams; // variable for storing the route parameters
@@ -60,14 +59,14 @@ var highlightPollLayerId = "highlightPollLayerId"; //Graphics layer object for d
 var infoPopupFieldsCollection; //variable to Set the content to be displayed on the info-Popup
 var infoWindowHeader; //variable used to store the info window header
 var searchforDirections; //variable used to store directions to be displayed on map
-var locatorSettings; //variable used to store address search setting
+var locatorSettings; //variable used to store address search setting 
 var firstClick = true; //check for the first click on the map used in order to destroy the Dom elements
 var selectedMapPoint; // variable to store selected map point
 var lastSearchTime; //variable for store the time of last search
 var stagedSearch; //variable for store the time limit for search
 var lastSearchString; //variable for store the last search string
 var infoPopupHeight; //variable used for storing the info window height
-var shareFlag = false; //variable to store sharing flag
+var shareFlag = false; //variable to store sharing flag 
 var infoPopupWidth; //variable used for storing the info window width
 var zoomLevel; //variable to set required zoom level.
 var rippleSize; //variable to set ripple Size
@@ -75,23 +74,23 @@ var callOutAddress; //variable to set Address to be displayed on mobile callout.
 var featureLayerID; //variable to store ID for feature layer
 var startExtent; //variable to store current extent of map
 var selectedFieldName;
+var headerstr; // used to pass header to print
 
 //This initialization function is called when the DOM elements are ready
 
 function Init() {
     esri.config.defaults.io.proxyUrl = "proxy.ashx"; //Setting to use proxy file
-    esriConfig.defaults.io.alwaysUseProxy = true;
+    esriConfig.defaults.io.alwaysUseProxy = false;
     esriConfig.defaults.io.timeout = 180000; //esri request timeout value
     var userAgent = window.navigator.userAgent; //used to detect the type of devices
     if (userAgent.indexOf("iPhone") >= 0 || userAgent.indexOf("iPad") >= 0) {
         isiOS = true;
     }
-    if ((userAgent.indexOf("Android") >= 0 && userAgent.indexOf("Mobile") >= 0) || userAgent.indexOf("iPhone") >= 0) {
+    if (userAgent.indexOf("Android") >= 0 || userAgent.indexOf("iPhone") >= 0) {
         fontSize = 15;
         isMobileDevice = true;
         dojo.byId('dynamicStyleSheet').href = "styles/mobile.css";
-    } else if ((userAgent.indexOf("iPad") >= 0) || (userAgent.indexOf("Android") >= 0)) {
-        isAndroidTablet = navigator.userAgent.indexOf("Android") >= 0;
+    } else if (userAgent.indexOf("iPad") >= 0) {
         fontSize = 14;
         isTablet = true;
         dojo.byId('dynamicStyleSheet').href = "styles/tablet.css";
@@ -103,9 +102,8 @@ function Init() {
     ShowProgressIndicator();
     dojo.byId("divSplashContent").style.fontSize = fontSize + "px";
     var eventFired = false;
-    var responseObject = new js.Config();
-    Initialize(responseObject);
-    // Identify the key presses while implementing auto-complete and assign appropriate actions
+    
+    // Identify the key presses while implementing auto-complete and assign appropriate actions    
     dojo.connect(dojo.byId("txtAddress"), 'onkeyup', function (evt) {
         if (evt) {
             var keyCode = evt.keyCode;
@@ -130,7 +128,7 @@ function Init() {
                         // Clear any staged search
                         clearTimeout(stagedSearch);
                         if (dojo.byId("txtAddress").value.trim().length > 0) {
-                            // Stage a new search, which will launch if no new searches show up
+                            // Stage a new search, which will launch if no new searches show up 
                             // before the timeout
                             stagedSearch = setTimeout(function () {
                                 dojo.byId("imgSearchLoader").style.display = "block";
@@ -148,17 +146,12 @@ function Init() {
             }
         }
     });
-    dojo.connect(dojo.byId("txtAddress"), 'onfocus', function (evt) {
-        if ((dojo.byId("imgToggleResults").getAttribute("state") == "maximized") && isAndroidTablet && isTablet && window.matchMedia("(orientation: landscape)").matches) {
-            WipeOutResults();
-        }
-    });
 
     dojo.connect(dojo.byId("imgLocate"), 'onclick', function (evt) {
 
         if (dojo.byId('txtAddress').value.trim() == "") {
             alert(messages.getElementsByTagName("addressToLocate")[0].childNodes[0].nodeValue);
-            dojo.byId("imgLocate").src = "images/locate.png";
+            dojo.byId("imgLocate").src = "images/vr_button.gif";
             return;
         }
         LocateAddress();
@@ -168,7 +161,8 @@ function Init() {
     if (!Modernizr.geolocation) {
         dojo.byId("tdGeolocation").style.display = "none"; //geo location icon is made invisible for the non supported browsers
     }
-
+    var responseObject = new js.Config();
+    Initialize(responseObject);
 }
 
 //This function is called at the initialize state
@@ -418,6 +412,7 @@ function MapInitFunction() {
                 featureLayer = CreatePointFeatureLayer(services[i].ServiceUrl, i, '*', services[i].Image, services[i].HasRendererImage);
             }
             map.addLayer(featureLayer);
+            featureLayer.hide();
         }
     }
 }
@@ -459,7 +454,6 @@ function GetServices(evt, share) {
     }
     ShowProgressIndicator();
     QueryService(mapPoint);
-
     if (isMobileDevice) {
         CallOutAddressDisplay(evt);
         CreateListLayOut();
@@ -493,7 +487,7 @@ function CallOutAddressDisplay(evt) {
     });
 }
 
-//Reverse geocoding to get address
+//Reverse geocoding to get address 
 
 function SelectedPointAddress() {
     var locator = new esri.tasks.Locator(locatorSettings.Locators[0].LocatorURL);
