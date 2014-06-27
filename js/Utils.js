@@ -1,24 +1,26 @@
-﻿/** @license
- | Version 10.2
- | Copyright 2012 Esri
- |
- | Licensed under the Apache License, Version 2.0 (the "License");
- | you may not use this file except in compliance with the License.
- | You may obtain a copy of the License at
- |
- |    http://www.apache.org/licenses/LICENSE-2.0
- |
- | Unless required by applicable law or agreed to in writing, software
- | distributed under the License is distributed on an "AS IS" BASIS,
- | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- | See the License for the specific language governing permissions and
- | limitations under the License.
- */
+/** @license
+| Version 10.1.1
+| Copyright 2012 Esri
+|
+| Licensed under the Apache License, Version 2.0 (the "License");
+| you may not use this file except in compliance with the License.
+| You may obtain a copy of the License at
+|
+|    http://www.apache.org/licenses/LICENSE-2.0
+|
+| Unless required by applicable law or agreed to in writing, software
+| distributed under the License is distributed on an "AS IS" BASIS,
+| WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+| See the License for the specific language governing permissions and
+| limitations under the License.
+*/
 var orientationChange = false; //variable for setting the flag on orientation
 var tinyResponse; //variable for storing the response getting from tiny URL api
 var tinyUrl; //variable for storing the tiny URL
-var routeID; //variable to store graphics layer ID of route for sharing
+var routeID; //variable to store graphics layer ID of route for sharing 
 var featureID; //variable to store ID for infowindow
+
+var openedWindow;
 
 //Refresh address container div
 
@@ -163,11 +165,6 @@ function orientationChanged() {
                     orientationChange = false;
                 }, 500);
                 FixBottomPanelWidth(); //function to set width of shortcut links in ipad orientation change
-                if ((dojo.byId("imgToggleResults").getAttribute("state") == "maximized") && isAndroidTablet && isTablet && window.matchMedia("(orientation: landscape)").matches) {
-                    if (document.activeElement.id == "txtAddress") {
-                        WipeOutResults();
-                    }
-                }
             }
         }, timeout);
     }
@@ -226,7 +223,7 @@ function SetHeightSplashScreen() {
     CreateScrollbar(dojo.byId("divSplashContainer"), dojo.byId("divSplashContent"));
 }
 
-//Handle resize browser event
+//Handle resize browser event 
 
 function ResizeHandler() {
     if (map) {
@@ -402,7 +399,7 @@ function GetMapExtent() {
     return (extents);
 }
 
-//Get the query string value of the provided key
+//Get the query string value of the provided key 
 function GetQuerystring(key) {
     var _default;
     if (_default == null) _default = "";
@@ -613,7 +610,7 @@ function CreateScrollbar(container, content) {
             scrolling = false;
         }, 100);
     }
-    //touch scrollbar end
+    //touch scrollbar end 
 }
 
 //Clear default value
@@ -671,7 +668,7 @@ function CreateFeatureLayerSelectionMode(featureLayerURL, featureLayerID, outFie
     return tempLayer;
 }
 
-//Add Point FeatureLayer services on map
+//Add Point FeatureLayer services on map 
 
 function CreatePointFeatureLayer(featureLayerURL, featureLayerID, outFields, rendererImage, renderer) {
     var tempLayer = new esri.layers.FeatureLayer(featureLayerURL, {
@@ -863,3 +860,106 @@ function HideInformationContainer() {
     selectedGraphic = null;
     featureID = null;
 }
+// Below here is what is needed to Print map
+//Show print window
+function ShowModal(key) {
+
+	//var key = evt.routeLayer;
+    //if (dojo.coords("divAppContainer").h > 0) {
+    //    dojo.replaceClass("divAppContainer", "hideContainerHeight", "showContainerHeight");
+    //    dojo.byId("divAppContainer").style.height = "0px";
+    //}
+    //if (dojo.coords("divLayerContainer").h > 0) {
+    //    dojo.replaceClass("divLayerContainer", "hideContainerHeight", "showContainerHeight");
+    //    dojo.byId("divLayerContainer").style.height = "0px";
+    //}
+    //printFlag = true;
+    
+// C Chernos - 24 June 2014. HDA ticket 999993073. Added logic for printing directly to attached kiosk printer, model HP 2055dn. 
+// Added openedWindow global variable, assigned it to window.open of printMap.htm, and closed the window after 1.5 seconds via a new setTimeout function.
+
+		setTimeout(function () {
+		//window.open("printMap.htm");
+		openedWindow = window.open("printMap.htm");		
+	}, 5);
+		
+		setTimeout(function () {
+		openedWindow.close();		
+	}, 1500);		
+		
+    
+}
+//Add graphic to a layer.
+function AddGraphic(layer, symbol, point, attr) {
+    var graphic = new esri.Graphic(point, symbol, attr, null);
+    layer.add(graphic);
+}
+
+//Get current instance of graphics layer
+function GetGraphicsLayer() {
+
+    var tempGraphicsLayer = map.getLayer(tempGraphicsLayerId);
+    return tempGraphicsLayer;
+}
+
+//Get current instance of route layer
+function GetRouteLayer() {
+
+    var routeLayer = map.getLayer(routeLayerId);
+	
+    return routeLayer;
+}
+
+function GetDirectionsHeader() {
+    
+    return directionsHeaderArray;
+    
+}
+function GetHeader() {
+    
+    return headerstr;
+    
+}
+function GetDrivingDirections() {
+    
+    return drivingDirections;
+    
+}
+function GetHighlightedPollLayer() {
+	
+    var highlightedLayer = map.getLayer(highlightPollLayerId);
+    
+    return highlightedLayer;
+}
+
+//Get current active URL
+function GetLayerUrl() {
+    var layers = [];
+    
+    for (var j = 0; j < map.layerIds.length; j++) {
+		
+        var layer = map.getLayer(map.layerIds[j]);
+        layers.push(layer);
+    }
+    for (var i = 0; i < layers.length; i++) {
+        if (layers[i].visible) {
+			
+            return layers[i].url;
+        }
+    }
+}
+
+//Function for getting current instance of Service layer
+//Get current instance of parks layer
+ function GetParksLayer() {
+	
+	var group = dojo.byId("imgShare").getAttribute("selectedPod");
+	for (var i in services) {
+        if (i == group) {
+			var parksLayer = services[i].ServiceUrl;
+			}
+		}
+   	return parksLayer;
+ }
+
+
